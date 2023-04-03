@@ -1,0 +1,33 @@
+name: Build Docker images
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/docker_images.yaml"
+      - "docker_images/**/*"
+
+env:
+  GH_PAT: ${{ secrets.GH_PAT }}
+
+jobs:
+  build-container:
+    name: Build Docker images
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dockerfile: ./docker_images/kubernetes_default/Dockerfile
+            image: ghcr.io/prefeitura-rio/coder-kubernetes-default
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and publish Prefect Agent image
+        run: |
+          docker build -t ${{ matrix.image }}:$GITHUB_SHA -f ${{ matrix.dockerfile }} .
+          docker build -t ${{ matrix.image }}:latest -f ${{ matrix.dockerfile }} .
+          echo $GH_PAT | docker login ghcr.io -u gabriel-milan --password-stdin
+          docker push ${{ matrix.image }}:$GITHUB_SHA
+          docker push ${{ matrix.image }}:latest
