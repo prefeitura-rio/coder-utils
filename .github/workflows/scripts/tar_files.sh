@@ -12,5 +12,5 @@ for dir in ./templates/*; do
     # Get the name of the directory
     dir_name=$(basename $dir)
     # Create a tar file of the files in the directory
-    tar -czf ./output/$dir_name.tar.gz -C $dir .
+    tar -czf ./output/$dir_name.tar -C $dir .
 done
