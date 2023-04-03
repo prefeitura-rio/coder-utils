@@ -32,6 +32,12 @@ variable "namespace" {
   description = "The Kubernetes namespace to create workspaces in (must exist prior to creating workspaces)"
 }
 
+variable "docker_image" {
+  type        = string
+  description = "The Docker image to use for workspaces"
+  default     = "ghcr.io/prefeitura-rio/coder-kubernetes-default:latest"
+}
+
 data "coder_parameter" "cpu" {
   name    = "CPU (cores)"
   default = "500m"
@@ -96,6 +102,12 @@ resource "coder_agent" "main" {
   startup_script_timeout = 180
   startup_script         = <<-EOT
     set -e
+    # install and configure miniconda
+    curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/miniconda.sh
+    bash /tmp/miniconda.sh -b -p /home/coder/miniconda
+    rm /tmp/miniconda.sh
+    /home/coder/miniconda/bin/conda init bash
+    /home/coder/miniconda/bin/conda init fish
     # install and start code-server
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.8.3
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
@@ -176,7 +188,7 @@ resource "kubernetes_pod" "main" {
     }
     container {
       name              = "dev"
-      image             = "ghcr.io/prefeitura-rio/coder-kubernetes-default:latest"
+      image             = var.docker_image
       image_pull_policy = "Always"
       command           = ["sh", "-c", coder_agent.main.init_script]
       security_context {
