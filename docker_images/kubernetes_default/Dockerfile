@@ -20,3 +20,5 @@ RUN curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64
     rm /tmp/miniconda.sh && \
     /home/coder/miniconda/bin/conda init bash && \
     /home/coder/miniconda/bin/conda init fish
+
+# Done.

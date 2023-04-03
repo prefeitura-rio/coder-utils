@@ -176,7 +176,7 @@ resource "kubernetes_pod" "main" {
     }
     container {
       name              = "dev"
-      image             = "codercom/enterprise-base:ubuntu"
+      image             = "ghcr.io/prefeitura-rio/coder-kubernetes-default:latest"
       image_pull_policy = "Always"
       command           = ["sh", "-c", coder_agent.main.init_script]
       security_context {
