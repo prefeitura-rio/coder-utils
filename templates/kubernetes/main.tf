@@ -108,6 +108,10 @@ resource "coder_agent" "main" {
     rm /tmp/miniconda.sh
     /home/coder/miniconda/bin/conda init bash
     /home/coder/miniconda/bin/conda init fish
+    # install fisher
+    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+    # install posix-source command
+    fisher install TSFoster/posix-source
     # install and start code-server
     curl -fsSL https://code-server.dev/install.sh | sh -s -- --method=standalone --prefix=/tmp/code-server --version 4.8.3
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
