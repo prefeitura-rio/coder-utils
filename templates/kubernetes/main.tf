@@ -117,6 +117,8 @@ resource "coder_agent" "main" {
     /tmp/code-server/bin/code-server --auth none --port 13337 >/tmp/code-server.log 2>&1 &
     # start postgresql in the background
     sudo start-stop-daemon --start --chuid "postgres:postgres" --exec "/usr/lib/postgresql/12/bin/postgres" -- --config-file=/etc/postgresql/12/main/postgresql.conf >/tmp/postgresql.log 2>&1 &
+    # modify postgres password
+    sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres'"
   EOT
 }
 
